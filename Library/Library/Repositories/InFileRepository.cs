@@ -5,13 +5,14 @@ using System.Linq;
 using System.Reflection.Metadata;
 using System.Text;
 using System.Text.Json;
+using System.Text.Json.Serialization;
 using System.Threading.Tasks;
 
 namespace Library.Repositories
 {
     public class InFileRepository<T> : IRepository<T> where T : class, IEntity, new()
     {
-        private const string booksFile = "books.txt";
+        private const string booksFile = "books.json";
         private const string latestIdFile = "latestId.txt"; 
         private List<T> _books = new List<T>();
         private int latestId;
@@ -34,19 +35,11 @@ namespace Library.Repositories
         {
             if (File.Exists(booksFile))
             {
-                using (var reader = File.OpenText(booksFile))
-                {
-                    var line = reader.ReadLine();
-                    while (line != null)
-                    {
-                        var book = JsonSerializer.Deserialize<T>(line);
-                        _books.Add(book);
+                var json = File.ReadAllText(booksFile);
 
-                        line = reader.ReadLine();
-                    }
-                }
+                _books = JsonSerializer.Deserialize<List<T>>(json);
+                GetLatestId();
             }
-            GetLatestId();
             return _books;
         }
 
@@ -66,19 +59,10 @@ namespace Library.Repositories
         {
             return _books;
         }
-
         public void Save()
         {
-            using (var erase = File.CreateText(booksFile)) { };
-            foreach (var item in _books)
-            {
-                var json = JsonSerializer.Serialize(item);
-
-                using (var writer = File.AppendText(booksFile))
-                {
-                    writer.WriteLine(json);
-                }
-            }
+            var json = JsonSerializer.Serialize(_books);
+            File.WriteAllText(booksFile, json);
             SaveLatestId();
             Done?.Invoke(this, null);
         }
