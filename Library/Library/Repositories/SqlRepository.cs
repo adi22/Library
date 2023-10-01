@@ -19,6 +19,8 @@ namespace Library.Repositories
             _dbSet = _dbContext.Set<T>();
         }
 
+        
+
         public IEnumerable<T> GetAll()
         {
             return _dbSet.ToList();
@@ -32,11 +34,13 @@ namespace Library.Repositories
         public void Add(T item)
         {
             _dbSet.Add(item);
+            
         }
 
         public void Remove(T item)
         {
             _dbSet.Remove(item);
+            
         }
 
         public void Save()
@@ -44,5 +48,9 @@ namespace Library.Repositories
             _dbContext.SaveChanges();
         }
 
+        public List<T> Show()
+        {
+            throw new NotImplementedException();
+        }
     }
 }

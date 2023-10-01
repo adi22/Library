@@ -36,5 +36,10 @@ namespace Library.Repositories
         {
 
         }
+
+        public List<T> Show()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
