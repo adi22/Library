@@ -11,6 +11,10 @@ namespace Library.Repositories
     {
         private readonly List<T> _items = new();
 
+        public event EventHandler<T>? BookAdded;
+        public event EventHandler<T>? BookDeleted;
+        public event EventHandler<T>? Done;
+
         public IEnumerable<T> GetAll()
         {
             return _items.ToList();

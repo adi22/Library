@@ -1,10 +1,5 @@
 ﻿using Library.Entities;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Library.Repositories
 {
@@ -12,6 +7,10 @@ namespace Library.Repositories
     {
         private readonly DbSet<T> _dbSet;
         private readonly DbContext _dbContext;
+
+        public event EventHandler<T>? BookAdded;
+        public event EventHandler<T>? BookDeleted;
+        public event EventHandler<T>? Done;
 
         public SqlRepository(DbContext dbContext)
         {

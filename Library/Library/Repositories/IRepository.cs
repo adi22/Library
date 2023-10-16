@@ -1,9 +1,4 @@
 ﻿using Library.Entities;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Library.Repositories
 {
@@ -11,5 +6,9 @@ namespace Library.Repositories
         where T : class, IEntity
     {
         List<T> Show();
+
+        public event EventHandler<T>? BookAdded;
+        public event EventHandler<T>? BookDeleted;
+        public event EventHandler<T>? Done;
     }
 }
