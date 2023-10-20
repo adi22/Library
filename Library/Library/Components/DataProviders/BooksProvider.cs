@@ -1,7 +1,7 @@
-﻿using Library.Entities;
-using Library.Repositories;
+﻿using Library.Data.Entities;
+using Library.Data.Repositories;
 
-namespace Library.DataProviders
+namespace Library.Components.DataProviders
 {
     public class BooksProvider : IBooksProvider
     {
@@ -15,12 +15,14 @@ namespace Library.DataProviders
         public List<string?> GetUniqueAuthors()
         {
             var books = _booksRepository.GetAll();
-            return books.Select(b => b.Author)
+            return books
+            .OrderBy (x => x.Author)
+            .Select(b => b.Author)
             .Distinct()
             .ToList();
         }
 
-        public int getMaximalLengthOfAllBooks()
+        public int GetMaximalLengthOfAllBooks()
         {
             var books = _booksRepository.GetAll();
             return (int)books.Select(x => x.Length).Max();
@@ -30,6 +32,20 @@ namespace Library.DataProviders
         {
             var books = _booksRepository.GetAll();
             return books.OrderBy(x => x.Title).ToList();
+        }
+
+        public double GetAverageRatingOfAllBooks()
+        {
+            var books = _booksRepository.GetAll();
+            return (double)books.Select(x => x.Rating).Average();
+        }
+
+        public List<Book> ResultsToPage(int page)
+        {
+            var books = _booksRepository.GetAll();
+            return books
+                .OrderBy(x => x.Title)
+                .Take((page*100-100)..(page*100)).ToList();
         }
     }
 }

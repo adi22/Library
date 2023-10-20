@@ -1,6 +1,6 @@
-﻿using Library.Entities;
+﻿using Library.Data.Entities;
 
-namespace Library.Repositories
+namespace Library.Data.Repositories
 {
     public interface IReadRepository<out T> where T : class, IEntity
     {

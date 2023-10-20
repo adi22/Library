@@ -1,7 +1,7 @@
-﻿using Library.Entities;
+﻿using Library.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 
-namespace Library.Repositories
+namespace Library.Data.Repositories
 {
     public class SqlRepository<T> : IRepository<T> where T : class, IEntity, new()
     {
@@ -18,14 +18,14 @@ namespace Library.Repositories
             _dbSet = _dbContext.Set<T>();
         }
 
-        
+
 
         public IEnumerable<T> GetAll()
         {
             return _dbSet.ToList();
         }
 
-        public T GetById(int id) 
+        public T GetById(int id)
         {
             return _dbSet.Find(id);
         }
@@ -33,13 +33,13 @@ namespace Library.Repositories
         public void Add(T item)
         {
             _dbSet.Add(item);
-            
+
         }
 
         public void Remove(T item)
         {
             _dbSet.Remove(item);
-            
+
         }
 
         public void Save()

@@ -1,4 +1,4 @@
-﻿using Library.Entities;
+﻿using Library.Data.Entities;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using System;

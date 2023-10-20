@@ -1,12 +1,12 @@
-﻿using Library.Entities;
+﻿using Library.Data.Entities;
 using System.Text.Json;
 
-namespace Library.Repositories
+namespace Library.Data.Repositories
 {
     public class InFileRepository<T> : IRepository<T> where T : class, IEntity, new()
     {
         private const string booksFile = "books.json";
-        private const string latestIdFile = "latestId.txt"; 
+        private const string latestIdFile = "latestId.txt";
         private List<T> _books = new List<T>();
         private int latestId;
 
@@ -16,7 +16,7 @@ namespace Library.Repositories
 
         public void Add(T item)
         {
-            
+
             item.Id = latestId + 1;
             latestId += 1;
             _books.Add(item);

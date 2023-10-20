@@ -1,6 +1,8 @@
-﻿using Library.DataProviders;
-using Library.Entities;
-using Library.Repositories;
+﻿using Library.Components.CsvReader;
+using Library.Components.DataProviders;
+using Library.Data.Entities;
+using Library.Data.Repositories;
+using System.Xml.Linq;
 
 namespace Library
 {
@@ -8,14 +10,17 @@ namespace Library
     {
         private readonly IRepository<Book> _booksRepository;
         private readonly IBooksProvider _booksProvider;
+        private readonly ICsvReader _csvReader;
         private const string logFile = "log.txt";
-        private List<string> _logBuffer = new List<string>();
+        private readonly List<string> _logBuffer = new List<string>();
 
         public App(IRepository<Book> booksRepository, 
-                   IBooksProvider booksProvider)
+                   IBooksProvider booksProvider,
+                   ICsvReader csvReader)
         {
             _booksRepository = booksRepository;
             _booksProvider = booksProvider;
+            _csvReader = csvReader;
         }
 
         public void Run()
@@ -25,13 +30,6 @@ namespace Library
             _booksRepository.BookAdded += BookRepositoryBookAdded;
             _booksRepository.BookDeleted += BookRepositoryBookDeleted;
             _booksRepository.Done += BookRepositoryActionDone;
-
-            if (_booksRepository.GetAll().Count() == 0)
-            {
-                DataGenerate();
-                _booksRepository.Save();
-                logBufferSave(_logBuffer);
-            }
 
             Menu();
 
@@ -45,6 +43,14 @@ namespace Library
                 }
                 switch (input)
                 {
+                    case "i":
+                    case "I":
+                        ImportFromCsv();
+                        break;
+                    case "e":
+                    case "E":
+                        ExportToXml();
+                        break;
                     case "m":
                     case "M":
                         Menu();
@@ -70,29 +76,18 @@ namespace Library
                     case "7":
                         ShowOrderedByTitle();
                         break;
+                    case "8":
+                        ShowPage();
+                        break;
+                    case "9":
+                        ShowAverageRating();
+                        break;
                     default:
                         Console.WriteLine("Wrong option!");
                         break;
 
                 }
             }
-        }
-
-        private void DataGenerate()
-        {
-            _booksRepository.Add(new Book { Title = "The Stand", Author = "Stephen King", Length = 1088, Rating = 8 });
-            _booksRepository.Add(new Book { Title = "The Godfather", Author = "Mario Puzo", Length = 576, Rating = 9 });
-            _booksRepository.Add(new Book { Title = "The Green Mile", Author = "Stephen King", Length = 416, Rating = 9 });
-            _booksRepository.Add(new Book { Title = "A Game of Thrones", Author = "George R.R. Martin", Length = 1000, Rating = 8 });
-            _booksRepository.Add(new Book { Title = "1984", Author = "George Orwell", Length = 352, Rating = 8 });
-            _booksRepository.Add(new Book { Title = "TLotR: The Fellowship of the Ring", Author = "J.R.R Tolkien", Length = 448, Rating = 8 });
-            _booksRepository.Add(new Book { Title = "The Hobbit, or There and Back Again", Author = "J.R.R Tolkien", Length = 304, Rating = 7 });
-            _booksRepository.Add(new Book { Title = "Metro 2033", Author = "Dmitry Glukhovsky", Length = 578, Rating = 7 });
-            _booksRepository.Add(new Book { Title = "Dune", Author = "Frank Herbert", Length = 777, Rating = 8 });
-            _booksRepository.Add(new Book { Title = "Frankenstein", Author = "Mary Shelley", Length = 320, Rating = 7 });
-            _booksRepository.Add(new Book { Title = "Dracula", Author = "Bram Stoker", Length = 428, Rating = 7 });
-            _booksRepository.Add(new Book { Title = "It", Author = "Stephen King", Length = 1104, Rating = 7 });
-            _booksRepository.Add(new Book { Title = "Othello", Author = "William Shakespeare", Length = 224, Rating = 6 });
         }
 
         private void BookRepositoryBookAdded(object? sender, Book e)
@@ -214,7 +209,7 @@ namespace Library
 
         private void ShowMaximalLengthOfAllBooks()
         {
-            Console.WriteLine(_booksProvider.getMaximalLengthOfAllBooks());
+            Console.WriteLine(_booksProvider.GetMaximalLengthOfAllBooks());
         }
 
         private void ShowOrderedByTitle()
@@ -225,19 +220,77 @@ namespace Library
             }
         }
 
+        private void ShowPage()
+        {
+            Console.WriteLine("Choose the page:");
+            var page = Console.ReadLine();
+
+            if (int.TryParse(page, out int res))
+            {
+                var result = _booksProvider.ResultsToPage(res);
+
+                foreach (var item in result)
+                {
+                    Console.WriteLine(item.ToString());
+                }
+            }
+            else 
+            {
+                Console.WriteLine("Wrong input!");
+            }
+        }
+
+        private void ShowAverageRating()
+        {
+            Console.WriteLine(Math.Round(_booksProvider.GetAverageRatingOfAllBooks(),2));
+        }
+
+        private void ImportFromCsv()
+        {
+            var records = _csvReader.ProcessBooks("Resources\\Files\\books.csv");
+            foreach (var record in records)
+            {
+                _booksRepository.Add(record);
+            }
+        }
+
+        private void ExportToXml()
+        {
+            var records = _booksRepository.GetAll();
+
+            var document = new XDocument();
+            var books = new XElement("Books", records
+                .Select(x =>
+                new XElement("Book",
+                new XAttribute("Title", x.Title),
+                new XAttribute("Author", x.Author),
+                new XAttribute("Rating", x.Rating),
+                new XAttribute("Length", x.Length))));
+                
+            document.Add(books);
+            document.Save("books.xml");
+        }
+
         private static void Menu()
         {
             Console.WriteLine("Hello in Library App");
-            Console.WriteLine("Choose:");
-            Console.WriteLine("1. To show the library");
-            Console.WriteLine("2. To add book to the library");
-            Console.WriteLine("3. To remove book from the library");
-            Console.WriteLine("4. To save changes");
+            Console.WriteLine("///// Standard options /////");
+            Console.WriteLine("1. Show the library");
+            Console.WriteLine("2. Add book to the library");
+            Console.WriteLine("3. Remove book from the library");
+            Console.WriteLine("4. Save changes");
+            Console.WriteLine("///// Data provider options /////");
             Console.WriteLine("5. Show unique authors");
             Console.WriteLine("6. Show maximal length of all books");
             Console.WriteLine("7. Show all books ordered by title");
+            Console.WriteLine("8. Choose the page you want to see");
+            Console.WriteLine("9. Show average rating of all books");
+            Console.WriteLine("///// Import/Export data /////");
+            Console.WriteLine("I. Import data from CSV file");
+            Console.WriteLine("E. Export data to XML file");
+            Console.WriteLine("///// Navigation /////");
             Console.WriteLine("M. Show menu");
-            Console.WriteLine("Q. To quit application");
+            Console.WriteLine("Q. Quit application");
         }
     }
 }

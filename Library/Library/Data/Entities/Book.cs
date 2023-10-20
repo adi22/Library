@@ -1,21 +1,20 @@
 ﻿using System.Text;
 
-namespace Library.Entities
+namespace Library.Data.Entities
 {
     public class Book : EntityBase
     {
         public string Title { get; set; }
         public string? Author { get; set; }
-        public string? Description { get; set; }
         public int? Length { get; set; }
-        public int? Rating { get; set; }
-        public decimal? Price { get; set; }
+        public double? Rating { get; set; }
+  
 
         public Book()
         {
-            
+
         }
-        public Book(string title, string author, int length, int rating)
+        public Book(string title, string author, int length, double rating)
         {
             Title = title;
             Author = author;
@@ -27,9 +26,9 @@ namespace Library.Entities
         {
             var sb = new StringBuilder();
             sb.AppendLine($"Id: {Id}   Title: {Title}");
-            if (Author != null) 
+            if (Author != null)
             {
-                sb.AppendLine($"        Author: {Author}");   
+                sb.AppendLine($"        Author: {Author}");
             }
             if (Length.HasValue)
             {
@@ -39,10 +38,7 @@ namespace Library.Entities
             {
                 sb.AppendLine($"        Rating: {Rating}");
             }
-            if (Price.HasValue)
-            {
-                sb.AppendLine($"        Price: {Price} PLN");
-            }
+            
             return sb.ToString();
         }
 
