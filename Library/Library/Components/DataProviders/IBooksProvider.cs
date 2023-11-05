@@ -4,10 +4,10 @@ namespace Library.Components.DataProviders
 {
     public interface IBooksProvider
     {
-        List<string> GetUniqueAuthors();
-        int GetMaximalLengthOfAllBooks();
-        List<Book> OrderByTitle();
+        IEnumerable<string> GetUniqueAuthors();
+        int GetMaximalLengthFromAllBooks();
+        IEnumerable<Book> OrderByTitle();
         double GetAverageRatingOfAllBooks();
-        List<Book> ResultsToPage(int page);
+        IEnumerable<Book> ResultsToPage(int page);
     }
 }

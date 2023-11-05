@@ -3,11 +3,11 @@ using System.Text.Json;
 
 namespace Library.Data.Repositories
 {
-    public class InFileRepository<T> : IRepository<T> where T : class, IEntity, new()
+    public class FileRepository<T> : IRepository<T> where T : class, IEntity, new()
     {
         private const string booksFile = "books.json";
         private const string latestIdFile = "latestId.txt";
-        private List<T> _books = new List<T>();
+        private List<T> _books = new();
         private int latestId;
 
         public event EventHandler<T>? BookAdded;
@@ -24,7 +24,7 @@ namespace Library.Data.Repositories
             Done?.Invoke(this, item);
         }
 
-        public IEnumerable<T> GetAll()
+        public IEnumerable<T> GetAllSaved()
         {
             if (File.Exists(booksFile))
             {
@@ -36,9 +36,21 @@ namespace Library.Data.Repositories
             return _books;
         }
 
+        public IEnumerable<T> GetAll()
+        { 
+            return _books;
+        }
+
         public T GetById(int id)
         {
-            return _books.Single(item => item.Id == id);
+            if (!_books.Any(book => book.Id == id))
+            {
+                throw new Exception("There is no such id");
+            }
+            else
+            {
+                return _books.Single(item => item.Id == id);
+            }
         }
 
         public void Remove(T item)
@@ -48,10 +60,6 @@ namespace Library.Data.Repositories
             Done?.Invoke(this, item);
         }
 
-        public List<T> Show()
-        {
-            return _books;
-        }
         public void Save()
         {
             var json = JsonSerializer.Serialize(_books);
