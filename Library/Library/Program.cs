@@ -1,15 +1,15 @@
-﻿using Library;
-using Library.Components.CsvReader;
-using Library.Components.DatabaseProviders;
-using Library.Components.DataProviders;
-using Library.Components.XmlExporter;
-using Library.Data;
-using Library.Data.Entities;
-using Library.Data.Repositories;
-using Library.UserCommunication;
+﻿using Library.ApplicationServices.Components.CsvReader;
+using Library.ApplicationServices.Components.DatabaseService;
+using Library.ApplicationServices.Components.DataProviders;
+using Library.ApplicationServices.Components.XmlExporter;
+using Library.DataAccess.Data;
+using Library.DataAccess.Data.Entities;
+using Library.DataAccess.Data.Repositories;
+using Library.UI;
+using Library.UI.UserCommunication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
-using EventHandler = Library.UserCommunication.EventHandler;
+using EventHandler = Library.UI.UserCommunication.EventHandler;
 
 var services = new ServiceCollection();
 
