@@ -1,13 +1,15 @@
-﻿using Spectre.Console;
+﻿using Library.DataAccess.Data.Entities;
+using Library.DataAccess.Data.Repositories;
+using Spectre.Console;
 
 namespace Library.UI.UserCommunication
 {
     public class MenuForFile : MenuBase
     {
-        private readonly UserOptionsInFile _userOptionsInFile;
+        private readonly UserOptions<FileRepository<Book>> _userOptionsInFile;
 
         public MenuForFile(
-            UserOptionsInFile userOptionsInFile)
+            UserOptions<FileRepository<Book>> userOptionsInFile)
         {
             _userOptionsInFile = userOptionsInFile;
         }

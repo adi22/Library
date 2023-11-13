@@ -2,10 +2,11 @@
 
 namespace Library.DataAccess.Data.Repositories
 {
-    public interface IReadRepository<out T> where T : class, IEntity
+    public interface IReadRepository<out TEntity> 
+        where TEntity : class, IEntity
     {
-        IEnumerable<T> GetAllSaved();
-        IEnumerable<T> GetAll();
-        T GetById(int id);
+        IEnumerable<TEntity> GetAll();
+        TEntity GetById(int id);
+        string GetLogName();
     }
 }

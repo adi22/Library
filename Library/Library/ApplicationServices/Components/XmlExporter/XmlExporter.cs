@@ -19,7 +19,7 @@ namespace Library.ApplicationServices.Components.XmlExporter
                 new XAttribute("Length", x.Length))));
 
             document.Add(books);
-            document.Save("books.xml");
+            document.Save("Books.xml");
         }
     }
 }

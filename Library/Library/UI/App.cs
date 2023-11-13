@@ -7,26 +7,29 @@ namespace Library.UI
 {
     public class App : IApp
     {
-        private readonly IRepository<Book> _booksRepository;
-        private readonly LibraryDbContext _libraryDbContext;
-        private readonly IEventHandler _eventHandler;
+        private readonly FileRepository<Book> _fileRepository;
+        private readonly SqlRepository<Book> _sqlRepository;
+        private readonly UserCommunication.EventHandler<FileRepository<Book>> _fileEventHandler;
+        private readonly UserCommunication.EventHandler<SqlRepository<Book>> _databaseEventHandler;
         private readonly IMenu _menu;
         private readonly MenuForFile _menuForFile;
         private readonly MenuForDatabase _menuForDatabase;
         private readonly MenuMain _menuMain;
 
         public App(
-                   IRepository<Book> booksRepository,
-                   LibraryDbContext libraryDbContext,
-                   IEventHandler eventHandler,
+                   FileRepository<Book> fileRepository,
+                   SqlRepository<Book> sqlRepository,
+                   UserCommunication.EventHandler<FileRepository<Book>> fileEventHandler,
+                   UserCommunication.EventHandler<SqlRepository<Book>> databaseEventHandler,
                    IMenu menu,
                    MenuForFile menuForFile,
                    MenuForDatabase menuForDatabase,
                    MenuMain menuMain)
         {
-            _booksRepository = booksRepository;
-            _libraryDbContext = libraryDbContext;
-            _eventHandler = eventHandler;
+            _fileRepository = fileRepository;
+            _sqlRepository = sqlRepository;
+            _fileEventHandler = fileEventHandler;
+            _databaseEventHandler = databaseEventHandler;
             _menu = menu;
             _menuForFile = menuForFile;
             _menuForDatabase = menuForDatabase;
@@ -41,9 +44,10 @@ namespace Library.UI
 
         private void PrepareAllData()
         {
-            _libraryDbContext.Database.EnsureCreated();
-            _booksRepository.GetAllSaved();
-            _eventHandler.HandleEvents();
+            _sqlRepository.EnsureCreated();
+            _fileRepository.GetAll();
+            _fileEventHandler.HandleEvents();
+            _databaseEventHandler.HandleEvents();
         }
 
         private void ShowUi()

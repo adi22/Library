@@ -3,45 +3,41 @@ using System.Text.Json;
 
 namespace Library.DataAccess.Data.Repositories
 {
-    public class FileRepository<T> : IRepository<T> where T : class, IEntity, new()
+    public class FileRepository<TEntity> : IRepository<TEntity> 
+        where TEntity : class, IEntity, new()
     {
-        private const string booksFile = "books.json";
-        private const string latestIdFile = "latestId.txt";
-        private List<T> _books = new();
+        private const string booksFile = "Books.json";
+        private const string latestIdFile = "LatestId.txt";
+        private const string logName = "FileLog.txt";
+        private List<TEntity> _books = new();
         private int latestId;
 
-        public event EventHandler<T>? BookAdded;
-        public event EventHandler<T>? BookDeleted;
-        public event EventHandler<T>? Done;
+        public event EventHandler<TEntity>? BookAdded;
+        public event EventHandler<TEntity>? BookDeleted;
+        public event EventHandler<TEntity>? ChangesSaved;
 
-        public void Add(T item)
+        public void Add(TEntity item)
         {
 
             item.Id = latestId + 1;
             latestId += 1;
             _books.Add(item);
             BookAdded?.Invoke(this, item);
-            Done?.Invoke(this, item);
         }
 
-        public IEnumerable<T> GetAllSaved()
+        public IEnumerable<TEntity> GetAll()
         {
             if (File.Exists(booksFile))
             {
                 var json = File.ReadAllText(booksFile);
 
-                _books = JsonSerializer.Deserialize<List<T>>(json);
+                _books = JsonSerializer.Deserialize<List<TEntity>>(json);
                 GetLatestId();
             }
             return _books;
         }
 
-        public IEnumerable<T> GetAll()
-        {
-            return _books;
-        }
-
-        public T GetById(int id)
+        public TEntity GetById(int id)
         {
             if (!_books.Any(book => book.Id == id))
             {
@@ -53,11 +49,10 @@ namespace Library.DataAccess.Data.Repositories
             }
         }
 
-        public void Remove(T item)
+        public void Remove(TEntity item)
         {
             _books.Remove(item);
             BookDeleted?.Invoke(this, item);
-            Done?.Invoke(this, item);
         }
 
         public void Save()
@@ -65,7 +60,7 @@ namespace Library.DataAccess.Data.Repositories
             var json = JsonSerializer.Serialize(_books);
             File.WriteAllText(booksFile, json);
             SaveLatestId();
-            Done?.Invoke(this, null);
+            ChangesSaved?.Invoke(this, null);
         }
 
         private void GetLatestId()
@@ -89,6 +84,11 @@ namespace Library.DataAccess.Data.Repositories
             {
                 writer.Write(latestId);
             }
+        }
+
+        public string GetLogName()
+        {
+            return logName;
         }
     }
 }

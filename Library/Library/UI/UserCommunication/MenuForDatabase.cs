@@ -1,13 +1,15 @@
-﻿using Spectre.Console;
+﻿using Library.DataAccess.Data.Entities;
+using Library.DataAccess.Data.Repositories;
+using Spectre.Console;
 
 namespace Library.UI.UserCommunication
 {
     public class MenuForDatabase : MenuBase
     {
-        private readonly UserOptionsInDatabase _userOptionsInDatabase;
+        private readonly UserOptions<SqlRepository<Book>> _userOptionsInDatabase;
 
         public MenuForDatabase(
-            UserOptionsInDatabase userOptionsInDatabase)
+            UserOptions<SqlRepository<Book>> userOptionsInDatabase)
         {
             _userOptionsInDatabase = userOptionsInDatabase;
         }

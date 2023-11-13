@@ -1,6 +1,10 @@
-﻿namespace Library.UI.UserCommunication
+﻿using Library.DataAccess.Data.Entities;
+using Library.DataAccess.Data.Repositories;
+
+namespace Library.UI.UserCommunication
 {
-    public interface IUserOptions
+    public interface IUserOptions<TRepository>
+        where TRepository : class, IRepository<Book>
     {
         void ShowLibrary();
         void AddBook();

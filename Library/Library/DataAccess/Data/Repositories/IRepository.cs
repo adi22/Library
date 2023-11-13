@@ -2,11 +2,11 @@
 
 namespace Library.DataAccess.Data.Repositories
 {
-    public interface IRepository<T> : IReadRepository<T>, IWriteRepository<T>
-        where T : class, IEntity
+    public interface IRepository<TEntity> : IReadRepository<TEntity>, IWriteRepository<TEntity>
+        where TEntity : class, IEntity
     {
-        public event EventHandler<T>? BookAdded;
-        public event EventHandler<T>? BookDeleted;
-        public event EventHandler<T>? Done;
+        public event EventHandler<TEntity>? BookAdded;
+        public event EventHandler<TEntity>? BookDeleted;
+        public event EventHandler<TEntity>? ChangesSaved;
     }
 }

@@ -3,12 +3,13 @@ using Library.DataAccess.Data.Repositories;
 
 namespace Library.ApplicationServices.Components.DataProviders
 {
-    public class BooksFromFileProvider : IBooksProvider
+    public class BooksProvider<TRepository> : IBooksProvider<TRepository> 
+        where TRepository : class, IRepository<Book>
     {
-        private readonly IRepository<Book> _booksRepository;
+        private readonly TRepository _booksRepository;
 
-        public BooksFromFileProvider(
-            IRepository<Book> booksRepository)
+        public BooksProvider(
+            TRepository booksRepository)
         {
             _booksRepository = booksRepository;
         }
@@ -45,7 +46,7 @@ namespace Library.ApplicationServices.Components.DataProviders
         {
             var books = _booksRepository.GetAll();
 
-            if (IsEnteredPageInListRange(page))
+            if (IsEnteredPageInRepositoryRange(page))
             {
                 return books
                     .OrderBy(x => x.Title)
@@ -60,7 +61,7 @@ namespace Library.ApplicationServices.Components.DataProviders
 
         }
 
-        private bool IsEnteredPageInListRange(int enteredPage)
+        private bool IsEnteredPageInRepositoryRange(int enteredPage)
         {
             var lastPage = (_booksRepository.GetAll().Count() - 1) / 100 + 1;
 

@@ -3,37 +3,38 @@ using Library.DataAccess.Data.Repositories;
 
 namespace Library.UI.UserCommunication
 {
-    public class EventHandler : IEventHandler
+    public class EventHandler<TRepository> : IEventHandler<TRepository> 
+        where TRepository : class, IRepository<Book>
     {
-        private readonly IRepository<Book> _booksRepository;
-        private readonly UserOptionsInFile _userOptionsInFile;
+        private readonly UserOptions<TRepository> _userOptions;
+        private readonly TRepository _booksRepository;
 
         public EventHandler(
-            IRepository<Book> booksRepository,
-            UserOptionsInFile userOptionsInFile)
+            UserOptions<TRepository> userOptions,
+            TRepository booksRepository)
         {
+            _userOptions = userOptions;
             _booksRepository = booksRepository;
-            _userOptionsInFile = userOptionsInFile;
         }
         public void HandleEvents()
         {
             _booksRepository.BookAdded += BookRepositoryBookAdded;
             _booksRepository.BookDeleted += BookRepositoryBookDeleted;
-            _booksRepository.Done += BookRepositoryActionDone;
+            _booksRepository.ChangesSaved += BookRepositoryChangesSaved;
         }
         private void BookRepositoryBookAdded(object? sender, Book e)
         {
-            _userOptionsInFile.GetLogBuffer().Add($"[{DateTime.Now}]-BookAdded-[{e.Title}]");
+            _userOptions.GetLogBuffer().Add($"[{DateTime.Now}]-BookAdded-[Title: {e.Title}]");
         }
 
         private void BookRepositoryBookDeleted(object? sender, Book e)
         {
-            _userOptionsInFile.GetLogBuffer().Add($"[{DateTime.Now}]-BookDeleted-[{e.Title}]");
+            _userOptions.GetLogBuffer().Add($"[{DateTime.Now}]-BookDeleted-[Title: {e.Title}]");
         }
 
-        private void BookRepositoryActionDone(object? sender, Book e)
+        private void BookRepositoryChangesSaved(object? sender, Book e)
         {
-            Console.WriteLine("Done!");
+            Console.WriteLine("All changes have been saved!");
         }
     }
 }

@@ -2,10 +2,11 @@
 
 namespace Library.DataAccess.Data.Repositories
 {
-    public interface IWriteRepository<in T> where T : class, IEntity
+    public interface IWriteRepository<in TEntity> 
+        where TEntity : class, IEntity
     {
-        void Add(T item);
-        void Remove(T item);
+        void Add(TEntity item);
+        void Remove(TEntity item);
         void Save();
     }
 }

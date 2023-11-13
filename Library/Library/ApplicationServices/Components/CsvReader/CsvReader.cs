@@ -5,7 +5,7 @@ namespace Library.ApplicationServices.Components.CsvReader
 {
     public class CsvReader : ICsvReader
     {
-        public List<Book> ProcessBooks(string filePath)
+        public IEnumerable<Book> ProcessBooks(string filePath)
         {
             if (!File.Exists(filePath))
             {

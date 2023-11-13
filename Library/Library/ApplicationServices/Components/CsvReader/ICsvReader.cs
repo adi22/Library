@@ -4,6 +4,6 @@ namespace Library.ApplicationServices.Components.CsvReader
 {
     public interface ICsvReader
     {
-        List<Book> ProcessBooks(string filePath);
+        IEnumerable<Book> ProcessBooks(string filePath);
     }
 }
